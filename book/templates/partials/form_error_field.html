@@ -1,0 +1,5 @@
+{% if errors %}
+    <p class="class text-danger">
+        {{ form.name.errors|striptags }}
+    </p>
+{% endif %}
