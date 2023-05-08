@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<button class="btn btn-success my-2" data-bs-toggle="modal" data-bs-target="#saveForm">Crear</button>
+<button class="btn btn-success my-2" data-bs-toggle="modal" data-bs-target="#saveModal">Crear</button>
 
 <div class="row">
   {% for b in books%}
@@ -11,6 +11,7 @@
               <div class="card-header">
                   <h3>
                       {{ b.name }}
+                      <button class="btn btn-outline-primary float-right" data-bs-toggle="modal" data-bs-target="#saveModal" data-bs-id="{{ b.pk }}" >Editar</button>
                   </h3>
               </div>
               <div class="card-body">
@@ -21,14 +22,15 @@
   {% endfor%}
 </div>
 
-<div class="modal fade" tabindex="-1" id="saveForm">
+<div class="modal fade" tabindex="-1" id="saveModal">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Modal title</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="{% url 'book:add' %}" method="post">
+      <form id="saveForm" action="{% url 'book:add' %}" add_action="{% url 'book:add' %}" update_action="{% url 'book:update' 0 %}"
+      method="post">
       <div class="modal-body">
         
         {% csrf_token %}
@@ -60,5 +62,31 @@
 </div>
 
 {% include 'partials/pagination.html' with page_obj=books %}
+
+
+<script>
+  const saveModal = document.getElementById('saveModal')
+  const saveForm = document.getElementById('saveForm')
+  if (saveModal) {
+    saveModal.addEventListener('show.bs.modal', event => {
+    // Button that triggered the modal
+    const button = event.relatedTarget
+    // Extract info from data-bs-* attributes
+    const id = button.getAttribute('data-bs-id')
+    
+    console.log(id)
+
+    if(id == null){
+      //add
+      saveForm.setAttribute('action',saveForm.getAttribute('add_action'))
+    }
+    else{
+      //update
+      saveForm.setAttribute('action',saveForm.getAttribute('update_action').slice(0,-1)+id)
+    }
+  })
+}
+</script>
+
 
 {% endblock %}

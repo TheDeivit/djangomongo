@@ -16,5 +16,9 @@ class Book(models.Model):
     content = models.TextField()
 #    color = models.CharField(max_length=6, choices=COLOR_CHOICES, default='green')
 
+    @property
+    def pk(self):
+        return self._id
+    
     def __str__(self):
         return self.name
