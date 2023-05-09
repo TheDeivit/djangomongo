@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 
 from django.core.paginator import Paginator
 
+from bson.objectid import ObjectId
+
 from .models import Book
 from .forms import BookForm
 # Create your views here.
@@ -19,11 +21,11 @@ def add(request):
         else:
             return _listBook(request, form)
         
-    redirect('book:index')
+    return redirect('book:index')
 
 def update(request, pk):
 
-    book = Book.objects.get(pk = pk)
+    book = Book.objects.get(pk = ObjectId(pk))
 
     if request.method == 'POST':
         form = BookForm(request.POST, instance=book)
@@ -32,7 +34,7 @@ def update(request, pk):
         else:
             return _listBook(request, form)
         
-    redirect('book:index')
+    return redirect('book:index')
 
 
 def _listBook(request, form):
