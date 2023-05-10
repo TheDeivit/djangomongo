@@ -6,6 +6,7 @@ app_name='book'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('add', views.add, name='add'),
-    path('update/<str:pk>', views.update, name='update')
+    path('book/add', views.add, name='add'),
+    path('book/update/<str:pk>', views.update, name='update'),
+    path('book/j-get-book-by-id/<str:pk>', views.jgetBookId)
 ]

@@ -1,24 +1,29 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
 
-{% block content %}
-
-<button class="btn btn-success my-2" data-bs-toggle="modal" data-bs-target="#saveModal">Crear</button>
+<button onclick="cleanForm()" class="btn btn-success my-2" data-bs-toggle="modal" data-bs-target="#saveModal">Crear</button>
 
 <div class="row">
   {% for b in books%}
-      <div class="col-xl-3 col-md-4 col-12 mt-2">
-          <div class="card">
-              <div class="card-header">
-                  <h3>
-                      {{ b.name }}
-                      <button class="btn btn-outline-primary float-right" data-bs-toggle="modal" data-bs-target="#saveModal" data-bs-id="{{ b.pk }}" >Editar</button>
-                  </h3>
-              </div>
-              <div class="card-body">
-                  <p>{{ b.content }}</p>
-              </div>
-          </div>
+  <div class="col-xl-3 col-md-4 col-12 mt-2">
+    <div class="card">
+      <div class="card-header">
+        <h3>
+          {{ b.name }}
+          <button
+            class="btn btn-outline-primary float-right"
+            data-bs-toggle="modal"
+            data-bs-target="#saveModal"
+            data-bs-id="{{ b.pk }}"
+          >
+            Editar
+          </button>
+        </h3>
       </div>
+      <div class="card-body">
+        <p>{{ b.content }}</p>
+      </div>
+    </div>
+  </div>
   {% endfor%}
 </div>
 
@@ -27,66 +32,107 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Modal title</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
       </div>
-      <form id="saveForm" action="{% url 'book:add' %}" add_action="{% url 'book:add' %}" update_action="{% url 'book:update' 0 %}"
-      method="post">
-      <div class="modal-body">
-        
-        {% csrf_token %}
+      <form
+        id="saveForm"
+        action="{% url 'book:add' %}"
+        add_action="{% url 'book:add' %}"
+        update_action="{% url 'book:update' 0 %}"
+        method="post"
+      >
+        <div class="modal-body">
+          {% csrf_token %}
 
-        {% include 'partials/form_error_field.html' with errors=form.name.errors %}
-        <label for="id_name">Nombre:</label>
-        {{ form.name }}
+          <label for="id_name">Nombre:</label>
+          {% include 'partials/form_error_field.html' with errors=form.name.errors %} {{ form.name }}
 
-        {% include 'partials/form_error_field.html' with errors=form.content.errors %}
-        <label for="id_content">Contenido:</label>
-        {{ form.content }}
+          <label for="id_content">Contenido:</label>
+          {% include 'partials/form_error_field.html' with errors=form.content.errors %} {{ form.content }}
 
-
-        <!-- DROP DOWN DE OPCIONES
+          <!-- DROP DOWN DE OPCIONES
         <select>
           {% for item in dropdown_data %}
               <option>{{ item }}</option>
           {% endfor %}
         </select>
-        -->
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary" onclick="return confirm('¿Estás seguro de enviar el formulario?')">Guardar</button>
-      </div>
-    </form>
+        --></div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <!--onclick="return confirm('¿Estás seguro de enviar el formulario?')"-->
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
 {% include 'partials/pagination.html' with page_obj=books %}
-
-
 <script>
-  const saveModal = document.getElementById('saveModal')
-  const saveForm = document.getElementById('saveForm')
-  if (saveModal) {
-    saveModal.addEventListener('show.bs.modal', event => {
-    // Button that triggered the modal
-    const button = event.relatedTarget
-    // Extract info from data-bs-* attributes
-    const id = button.getAttribute('data-bs-id')
-    
-    console.log(id)
+  const saveModal = document.getElementById("saveModal")
 
-    if(id == null){
-      //add
-      saveForm.setAttribute('action',saveForm.getAttribute('add_action'))
+  window.onload = function () {
+    saveBook()
+  }
+
+  function saveBook(){
+    if (document.querySelectorAll("#saveModal .text-danger").length > 0) {
+      const saveModali = new bootstrap.Modal(saveModal)
+      saveModali.show();
     }
-    else{
+
+    const saveForm = document.getElementById("saveForm")
+
+    saveModal.addEventListener("show.bs.modal", (event) => {
+    // Button that triggered the modal
+    const button = event.relatedTarget;
+    // Extract info from data-bs-* attributes
+    const id = button.getAttribute("data-bs-id");
+
+    if (id == null) {
+      //add
+      saveForm.setAttribute("action", saveForm.getAttribute("add_action"))
+    } else {
       //update
-      saveForm.setAttribute('action',saveForm.getAttribute('update_action').slice(0,-1)+id)
+      saveForm.setAttribute("action",saveForm.getAttribute("update_action").slice(0, -1) + id)
+      getInfoBook(id)
     }
   })
 }
+
+  function cleanForm()
+  {
+    const name = document.querySelector('#saveForm [name=name]')
+    name.value = ""
+    const content = document.querySelector('#saveForm [name=content]')
+    content.value = ""
+  }
+
+  function getInfoBook(bookId){
+
+    fetch('http://127.0.0.1:8000/book/j-get-book-by-id/' + bookId)
+    .then(res => res.json())
+    .then(res => {
+      if(res == 'name')
+        return 
+
+      const name = document.querySelector('#saveForm [name=name]')
+      name.value = res.name
+
+      const content = document.querySelector('#saveForm [name=content]')
+      content.value = res.content
+    })
+  }
 </script>
-
-
 {% endblock %}

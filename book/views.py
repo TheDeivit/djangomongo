@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 #from pymongo import MongoClient
-
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 from bson.objectid import ObjectId
 
@@ -55,3 +55,21 @@ def _listBook(request, form):
     #print(books_page)
 
     return render(request, 'book/index.html', {'books':books_page, 'form': form})#, 'dropdown_data': dropdown_data
+
+
+#------------ JSON
+
+def jgetBookId(request,pk):
+
+    try:
+        book = Book.objects.get(pk=ObjectId(pk))
+    except Book.DoesNotExist:
+        return JsonResponse("")
+    
+    return JsonResponse({
+        'name': book.name,
+        'content': book.content
+    })
+    
+
+            
