@@ -8,6 +8,7 @@
         <th>NOMBRE</th>
         <th>DESCRIPCION</th>
         <th>ACTUALIZAR</th>
+        <th>ELIMINAR</th>
     </tr>
     {% for b in books %}
     <tr> 
@@ -17,11 +18,16 @@
             class="btn btn-outline-primary float-right" data-bs-toggle="modal" data-bs-target="#saveModal" data-bs-id="{{ b.pk }}">
             Editar
           </button></td>
+          <td><button
+            class="btn btn-outline-danger float-right" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-id="{{ b.pk }}">
+            Eliminar
+          </button></td>
     </tr>
     {% endfor %}
 </table>
 </div>
 
+<!-- CREAR O ACTUALIZAR LIBRO -->
 
 <div class="modal fade" tabindex="-1" id="saveModal">
   <div class="modal-dialog">
@@ -35,13 +41,7 @@
           aria-label="Close"
         ></button>
       </div>
-      <form
-        id="saveForm"
-        action="{% url 'book:add' %}"
-        add_action="{% url 'book:add' %}"
-        update_action="{% url 'book:update' 0 %}"
-        method="post"
-      >
+      <form id="saveForm" action="{% url 'book:add' %}" add_action="{% url 'book:add' %}" update_action="{% url 'book:update' 0 %}" method="post">
         <div class="modal-body">
           {% csrf_token %}
 
@@ -57,32 +57,71 @@
               <option>{{ item }}</option>
           {% endfor %}
         </select>
-        --></div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Close
-          </button>
+        -->
+      </div>
+        <div class="modal-footer"> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="submit" class="btn btn-primary">Guardar</button>
-          <!--onclick="return confirm('¿Estás seguro de enviar el formulario?')"-->
+          
         </div>
       </form>
     </div>
   </div>
 </div>
 
-{% include 'partials/pagination.html' with page_obj=books %}
-<script>
-  const saveModal = document.getElementById("saveModal")
+<!-- BORRAR LIBRO -->
 
+<div class="modal fade" tabindex="-1" id="deleteModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Borrar libro</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="deleteForm" action=""  delete_action="{% url 'book:delete' 0 %}" method="post">
+        <div class="modal-body">
+          
+          {% csrf_token %}
+
+          <p>¿Seguro que deseas borrar el libro seleccionado ?</p>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  {% include 'partials/pagination.html' with page_obj=books %}
+
+
+<script>
   window.onload = function () {
     saveBook()
+    deleteBook()
   }
 
+  function deleteBook(){
+    const deleteModal = document.getElementById("deleteModal")
+    const deleteForm = document.getElementById("deleteForm")
+
+    deleteModal.addEventListener("show.bs.modal", (event) => {
+    // Button that triggered the modal
+    const button = event.relatedTarget;
+    // Extract info from data-bs-* attributes
+    const id = button.getAttribute("data-bs-id");
+    deleteForm.setAttribute("action",deleteForm.getAttribute("delete_action").slice(0, -1) + id)
+
+  })
+  }
+
+
+
   function saveBook(){
+    const saveModal = document.getElementById("saveModal")
+
     if (document.querySelectorAll("#saveModal .text-danger").length > 0) {
       const saveModali = new bootstrap.Modal(saveModal)
       saveModali.show();

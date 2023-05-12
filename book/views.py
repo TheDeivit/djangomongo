@@ -36,6 +36,17 @@ def update(request, pk):
         
     return redirect('book:index')
 
+def delete(request,pk):
+
+    try:
+        book = Book.objects.get(pk=ObjectId(pk))
+        book.delete()
+    except Book.DoesNotExist:
+        pass
+    
+    return redirect('book:index')
+    
+#PRIVATE
 
 def _listBook(request, form):
     books = Book.objects.all()
@@ -44,7 +55,7 @@ def _listBook(request, form):
     page_number = request.GET.get('page')
     books_page = paginator.get_page(page_number)
 
-    #ESTAS LINEAS SIRVEN PARA EL DROPDOWN LIST
+    """#ESTAS LINEAS SIRVEN PARA EL DROPDOWN LIST
     client = MongoClient('localhost', 27017)
     db = client['djangomongo']
     collection = db['book_book']
@@ -52,9 +63,9 @@ def _listBook(request, form):
     for document in collection.find():
         dropdown_data.append(document['name'])
 
-    #print(books_page)
+    #print(books_page)"""
 
-    return render(request, 'book/index.html', {'books':books_page, 'form': form, 'dropdown_data': dropdown_data})#
+    return render(request, 'book/index.html', {'books':books_page, 'form': form})#, 'dropdown_data': dropdown_data
 
 
 #------------ JSON
