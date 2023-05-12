@@ -14,4 +14,4 @@ class BookForm(forms.ModelForm):
 
     class Meta:
         model = Book
-        fields= ('name', 'content') #, 'color'
+        fields= ('name', 'content')

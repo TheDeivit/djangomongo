@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-#from pymongo import MongoClient
+from pymongo import MongoClient
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 
@@ -39,22 +39,22 @@ def update(request, pk):
 
 def _listBook(request, form):
     books = Book.objects.all()
-    paginator = Paginator(books, 3)
+    paginator = Paginator(books, 8)
     
     page_number = request.GET.get('page')
     books_page = paginator.get_page(page_number)
 
     #ESTAS LINEAS SIRVEN PARA EL DROPDOWN LIST
-    """client = MongoClient('localhost', 27017)
+    client = MongoClient('localhost', 27017)
     db = client['djangomongo']
     collection = db['book_book']
     dropdown_data = []
     for document in collection.find():
-        dropdown_data.append(document['name'])"""
+        dropdown_data.append(document['name'])
 
     #print(books_page)
 
-    return render(request, 'book/index.html', {'books':books_page, 'form': form})#, 'dropdown_data': dropdown_data
+    return render(request, 'book/index.html', {'books':books_page, 'form': form, 'dropdown_data': dropdown_data})#
 
 
 #------------ JSON
