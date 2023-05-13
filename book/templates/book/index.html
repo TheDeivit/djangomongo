@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block content %}
 
-<button onclick="cleanForm()" class="btn btn-success my-2" data-bs-toggle="modal" data-bs-target="#saveModal">Crear</button>
+<button onclick="cleanForm()" class="btn btn-success my-2" data-bs-toggle="modal" data-bs-target="#saveModal"><i class="fa fa-plus"></i> Crear</button>
 
 <div class="container mt-3">
   <table class="table table-hover">
@@ -12,16 +12,16 @@
     </tr>
     {% for b in books %}
     <tr> 
-        <td>{{ b.name }}</td>
-        <td>{{ b.content }}</td>
-        <td><button
+        <td class="text-column">{{ b.name }}</td>
+        <td class="text-column">{{ b.content }}</td>
+        <td class="text-column"><button
             class="btn btn-outline-primary float-right" data-bs-toggle="modal" data-bs-target="#saveModal" data-bs-id="{{ b.pk }}">
-            Editar
+            <i class="fa fa-edit"></i>
           </button></td>
-          <td><button
+        <td class="text-column"><button
             class="btn btn-outline-danger float-right" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-id="{{ b.pk }}">
-            Eliminar
-          </button></td>
+            <i class="fa fa-trash"></i>
+        </button></td>
     </tr>
     {% endfor %}
 </table>
@@ -39,6 +39,7 @@
           class="btn-close"
           data-bs-dismiss="modal"
           aria-label="Close"
+          title="Cerrar"
         ></button>
       </div>
       <form id="saveForm" action="{% url 'book:add' %}" add_action="{% url 'book:add' %}" update_action="{% url 'book:update' 0 %}" method="post">
@@ -59,8 +60,8 @@
         </select>
         -->
       </div>
-        <div class="modal-footer"> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-primary">Guardar</button>
+        <div class="modal-footer"> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" class title="Cancelar"><i class="fa fa-cancel"></i></button>
+          <button type="submit" class="btn btn-primary" title="Guardar"><i class="fa fa-save"></i></button>
           
         </div>
       </form>
