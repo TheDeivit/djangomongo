@@ -15,11 +15,11 @@
         <td class="text-column">{{ b.name }}</td>
         <td class="text-column">{{ b.content }}</td>
         <td class="icon-column"><button
-            class="btn btn-outline-primary float-right" data-bs-toggle="modal" data-bs-target="#saveModal" data-bs-id="{{ b.pk }}">
+            class="btn btn-outline-primary float-right" data-bs-toggle="modal" data-bs-target="#saveModal" data-bs-id="{{ b.pk }}" data-bs-name="{{ b.name }}">
             <i class="fa fa-edit"></i>
           </button></td>
         <td class="icon-column"><button
-            class="btn btn-outline-danger float-right" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-id="{{ b.pk }}">
+            class="btn btn-outline-danger float-right" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-id="{{ b.pk }}" data-bs-name="{{ b.name }}">
             <i class="fa fa-trash"></i>
         </button></td>
     </tr>
@@ -33,7 +33,13 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Modal title</h5>
+        <h5 class="modal-title">
+          {% if form.instance.pk %}
+            Actualizar libro: {{ form.instance.name }}
+          {% else %}
+            Crear libro
+          {% endif %}
+        </h5>
         <button
           type="button"
           class="btn-close"
@@ -42,8 +48,15 @@
           title="Cerrar"
         ></button>
       </div>
-      <form id="saveForm" action="{% url 'book:add' %}" add_action="{% url 'book:add' %}" update_action="{% url 'book:update' 0 %}" method="post">
+      <form id="saveForm" action="
+      {% if form.instance.pk %}
+        {% url 'book:update' form.instance.pk %}
+      {% else %}
+        {% url 'book:add' %}
+      {% endif %}
+      " add_action="{% url 'book:add' %}" update_action="{% url 'book:update' 0 %}" method="post">
         <div class="modal-body">
+
           {% csrf_token %}
 
           <label for="id_name">Nombre:</label>
@@ -75,7 +88,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Borrar libro</h5>
+        <h5 class="modal-title">Borrar libro: <span></span></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form id="deleteForm" action=""  delete_action="{% url 'book:delete' 0 %}" method="post">
@@ -113,6 +126,9 @@
     const button = event.relatedTarget;
     // Extract info from data-bs-* attributes
     const id = button.getAttribute("data-bs-id");
+    const name = button.getAttribute("data-bs-name");
+
+    document.querySelector("#deleteModal .modal-title span").textContent = name
     deleteForm.setAttribute("action",deleteForm.getAttribute("delete_action").slice(0, -1) + id)
 
   })
@@ -135,13 +151,16 @@
     const button = event.relatedTarget;
     // Extract info from data-bs-* attributes
     const id = button.getAttribute("data-bs-id");
+    const name = button.getAttribute("data-bs-name");
 
     if (id == null) {
       //add
       saveForm.setAttribute("action", saveForm.getAttribute("add_action"))
+      document.querySelector("#saveModal .modal-title").textContent = "Crear libro"
     } else {
       //update
       saveForm.setAttribute("action",saveForm.getAttribute("update_action").slice(0, -1) + id)
+      document.querySelector("#saveModal .modal-title").textContent = "Actualizar libro: " + name
       getInfoBook(id)
     }
   })
