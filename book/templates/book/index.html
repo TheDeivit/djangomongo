@@ -53,8 +53,8 @@
         {% url 'book:update' form.instance.pk %}
       {% else %}
         {% url 'book:add' %}
-      {% endif %}
-      " add_action="{% url 'book:add' %}" update_action="{% url 'book:update' 0 %}" method="post">
+      {% endif %}" 
+      add_action="{% url 'book:add' %}" update_action="{% url 'book:update' 0 %}" method="post">
         <div class="modal-body">
 
           {% csrf_token %}
